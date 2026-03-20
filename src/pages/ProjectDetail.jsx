@@ -63,7 +63,7 @@ function ProjectDetail({ session }) {
     setSelectedRetros(dayRetros)
   }
 
-  const today = new Date().toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' }).replace(/\. /g, '-').replace('.', '')
+  const today = new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' })
   const daysInMonth = getDaysInMonth(currentDate)
   const firstDay = getFirstDayOfMonth(currentDate)
 
