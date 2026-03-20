@@ -12,6 +12,9 @@ function TeamDetail({ session }) {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [projectName, setProjectName] = useState('')
   const [projectDesc, setProjectDesc] = useState('')
+  const [showInviteModal, setShowInviteModal] = useState(false)
+  const [inviteEmail, setInviteEmail] = useState('')
+  const [inviting, setInviting] = useState(false)
 
   useEffect(() => {
     fetchTeamData()
@@ -60,17 +63,42 @@ function TeamDetail({ session }) {
     fetchTeamData()
   }
 
+  const sendInvite = () => {
+  const subject = encodeURIComponent(`[${team.name}] KPT 회고 팀 초대`)
+  const body = encodeURIComponent(`안녕하세요! 😊
+
+${team.name} 팀의 KPT 회고 앱에 초대합니다.
+
+아래 링크로 접속 후 구글 로그인 → 팀 참여 → 초대 코드 입력해주세요!
+
+🔗 링크: ${window.location.origin}
+🔑 초대 코드: ${team.invite_code}
+
+매일 5분, 함께 성장해요 🚀`)
+
+  window.open(`https://mail.google.com/mail/?view=cm&su=${subject}&body=${body}`)
+  setShowInviteModal(false)
+}
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">로딩 중...</div>
 
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white border-b px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <button onClick={() => navigate('/dashboard')} className="text-gray-400 hover:text-gray-600">← 뒤로</button>
-          <h1 className="text-xl font-bold">{team?.name}</h1>
-        </div>
-        <span className="text-sm text-gray-400">초대 코드: {team?.invite_code}</span>
-      </header>
+  <div className="flex items-center gap-3">
+    <button onClick={() => navigate('/dashboard')} className="text-gray-400 hover:text-gray-600">← 뒤로</button>
+    <h1 className="text-xl font-bold">{team?.name}</h1>
+  </div>
+  <div className="flex items-center gap-3">
+    <span className="text-sm text-gray-400">초대 코드: {team?.invite_code}</span>
+    <button
+      onClick={() => setShowInviteModal(true)}
+      className="bg-black text-white rounded-xl px-4 py-2 text-sm hover:bg-gray-800"
+    >
+      팀원 초대
+    </button>
+  </div>
+</header>
 
       <main className="max-w-3xl mx-auto px-6 py-10">
         {/* 멤버 */}
@@ -153,8 +181,35 @@ function TeamDetail({ session }) {
           </div>
         </div>
       )}
-    </div>
-  )
-}
 
+     {showInviteModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-xl">
+      <h3 className="text-xl font-bold mb-2">팀원 초대</h3>
+      <p className="text-sm text-gray-400 mb-6">버튼을 누르면 메일 앱이 열리고 초대 내용이 자동으로 작성돼!</p>
+      <div className="bg-gray-50 rounded-xl p-4 mb-6 text-sm text-gray-600">
+        <p className="mb-1">🔗 링크: {window.location.origin}</p>
+        <p>🔑 초대 코드: <span className="font-bold">{team?.invite_code}</span></p>
+      </div>
+      <div className="flex gap-2">
+        <button
+          onClick={() => setShowInviteModal(false)}
+          className="flex-1 border border-gray-300 rounded-xl py-3 text-sm"
+        >
+          취소
+        </button>
+        <button
+          onClick={sendInvite}
+          className="flex-1 bg-black text-white rounded-xl py-3 text-sm"
+        >
+          메일 앱으로 초대하기
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+    </div>
+  ) 
+}
 export default TeamDetail
